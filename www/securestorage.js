@@ -1,4 +1,4 @@
-var SecureStorage;
+var SecureStorage, SecureStorageAndroid, SecureStorageBrowser;
 
 var SUPPORTED_PLATFORMS = ['android', 'ios', 'windows'];
 
@@ -14,6 +14,12 @@ var _checkCallbacks = function (success, error) {
 //Taken from undescore.js
 var _isString = function isString(x) {
     return Object.prototype.toString.call(x) === '[object String]';
+};
+
+var _checkIsString = function(value){
+    if (!_isString(value)) {
+        throw new Error('Value is not a String');
+    }
 };
 
 /**
@@ -45,7 +51,7 @@ var _executeNativeMethod = function (success, error, nativeMethodName, args) {
     cordova.exec(success, fail, 'SecureStorage', nativeMethodName, args);
 };
 
-SecureStorage = function (success, error, service, options) {
+SecureStorageAndroid = function (success, error, service, options) {
     var platformId = cordova.platformId;
     var opts = options && options[platformId] ? options[platformId] : {};
 
@@ -59,7 +65,79 @@ SecureStorage = function (success, error, service, options) {
     return this;
 };
 
-SecureStorage.prototype = {
+SecureStorageBrowser = function (success, error, service) {    
+    this.service = service;
+    setTimeout(success, 0);
+    return this;
+};
+
+SecureStorageBrowser.prototype = {
+    get: function (success, error, key) {
+        var value;
+        try {
+            _checkCallbacks(success, error);
+            value = localStorage.getItem('_SS_' + key);
+            if (!value) {
+                error(new Error('Key "' + key + '" not found.'));
+            } else {
+                success(value);
+            }
+        } catch (e) {
+            error(e);
+        }
+    },
+
+    set: function (success, error, key, value) {
+        try {
+            _checkIsString(value);
+            _checkCallbacks(success, error);
+            localStorage.setItem('_SS_' + key, value);
+            success(key);
+        } catch (e) {
+            error(e);
+        }
+    },
+
+    remove: function (success, error, key) {
+        localStorage.removeItem('_SS_' + key);
+        success(key);
+    },
+
+    keys: function (success, error) {
+        var i, len, key, keys = [];
+        try {
+            _checkCallbacks(success, error);
+            for (i = 0, len = localStorage.length; i < len; ++i) {
+                key = localStorage.key(i);
+                if ('_SS_' === key.slice(0, 4)) {
+                    keys.push(key.slice(4));
+                }
+            }
+            success(keys);
+        } catch (e) {
+            error(e);
+        }
+    },
+
+    clear: function (success, error) {
+        var i, key;
+        try {
+            _checkCallbacks(success, error);
+            i = localStorage.length;
+            while (i-- > 0) {
+                key = localStorage.key(i);
+                if (key && '_SS_' === key.slice(0, 4)) {
+                    localStorage.removeItem(key);
+                }
+            }
+            success();
+        } catch (e) {
+            error(e);
+        }
+    }
+};
+
+SecureStorageAndroid.prototype = {
     get: function (success, error, key) {
         try {
             if (!_isString(key)) {
@@ -107,17 +185,24 @@ SecureStorage.prototype = {
         } catch (e) {
             error(e);
         }
-    }
-};
+    },
 
-if (cordova.platformId === 'android') {
-    SecureStorage.prototype.secureDevice = function (success, error) {
+    secureDevice: function (success, error) {
         try {
             _executeNativeMethod(success, error, 'secureDevice', []);
         } catch (e) {
             error(e);
         }
     }
+
+};
+
+if (cordova.platformId === 'android') {
+    SecureStorage = SecureStorageAndroid;
+}
+
+if (cordova.platformId === 'browser') {
+    SecureStorage = SecureStorageBrowser;
 }
 
 if (!cordova.plugins) {

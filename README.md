@@ -1,8 +1,6 @@
 # SecureStorage plugin for Apache Cordova
 
-[![NPM](https://nodei.co/npm/cordova-plugin-secure-storage-echo.png?mini=true)](https://nodei.co/npm/cordova-plugin-secure-storage-echo/)
-
-##### Forked from [Crypho/cordova-plugin-secure-storage](https://github.com/Crypho/cordova-plugin-secure-storage) in a effort to keep that project alive. Thank you @ggozad.
+##### Forked from [Crypho/cordova-plugin-secure-storage](https://github.com/Crypho/cordova-plugin-secure-storage) 
 
 ## Introduction
 
@@ -12,8 +10,6 @@ such as usernames, passwords, tokens, certificates or other sensitive informatio
 ### Supported platforms
 
 - Android
-- iOS
-- Windows (Windows 8.x/Store, Windows 10/UWP and Windows Phone 8.1+)
 
 ### Contents
 
@@ -33,7 +29,7 @@ The plugin can be installed via the Cordova command line interface:
 - Run the command:
 
 ```sh
-cordova plugin add cordova-plugin-secure-storage-echo
+cordova plugin add cordova-plugin-secure-storage-3
 ```
 
 ## <a name="plugin_api"></a> Plugin API
@@ -123,41 +119,6 @@ ss.clear(
 );
 ```
 
-## Platform details
-
-#### iOS
-
-On iOS secrets are stored directly in the KeyChain through the [SAMKeychain](https://github.com/soffes/samkeychain) library.
-
-##### Configuration
-
-On iOS it is possible to configure the accessibility of the keychain by setting the `KeychainAccessibility` preference in the `config.xml` to one of the following strings:
-
-- AfterFirstUnlock
-- AfterFirstUnlockThisDeviceOnly
-- WhenUnlocked (default)
-- WhenUnlockedThisDeviceOnly
-- WhenPasscodeSetThisDeviceOnly (this option is available only on iOS8 and later)
-
-For reference what these settings mean, see [Keychain Item Accessibility Constants](https://developer.apple.com/reference/security/keychain_services/keychain_item_accessibility_constants).
-
-For example, include in your `config.xml` the following:
-
-```xml
-    <platform name="ios">
-        <preference name="KeychainAccessibility" value="WhenUnlocked"/>
-    </platform>
-```
-
-#### iOS 7 Support
-
-iOS 7 is supported without `WhenPasscodeSetThisDeviceOnly` option.
-
-How to test the plugin using iOS 7 simulator:
-
-- Download and install Xcode 6 into a separate folder, e.g. /Application/Xcode 6/
-- Run `$ xcode-select --switch <path to Xcode6>/Contents/Developer`
-- Build Cordova app with the plugin and run it in iOS 7 simulator
 
 #### Android
 
@@ -312,14 +273,6 @@ Changing the lock screen type on Android erases the keystore (issues [61989](htt
 
 This means that any values saved using the plugin could be lost if the user changes security settings. The plugin should therefore be used as a secure credential cache and not persistent storage on Android.
 
-#### Windows
-
-Windows implementation is based on [PasswordVault](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.passwordvault.aspx) object from the [Windows.Security.Credentials](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.aspx) namespace.
-The contents of the locker are specific to the app so different apps and services don't have access to credentials associated with other apps or services.
-
-**Limitations:** you can only store up to ten credentials per app. If you try to store more than ten credentials, you will
-encounter an error. Read [documentation](https://msdn.microsoft.com/en-us/library/windows/apps/hh701231.aspx) for more details.
-
 #### Browser
 
 The browser platform is supported as a mock only. Key/values are stored unencrypted in localStorage.
@@ -334,29 +287,6 @@ The browser platform is supported as a mock only. Key/values are stored unencryp
 
   Yes, sorry. Android will not allow the creation of cryptographic keys unless the user has enabled at least PIN locking on the device.
 
-## Testing
-
-### Setup
-
-1. Create a cordova app.
-2. Change the start page in config.xml with `<content src="cdvtests/index.html" />`
-3. Add your platforms.
-4. Add the `cordova-plugin-test-framework` plugin:
-
-```
-cordova plugin add cordova-plugin-test-framework
-```
-
-5. Finally add the secure storage plugin as well as the tests from its location
-
-```
-cordova plugin add PATH_TO_SECURE_STORAGE_PLUGIN
-cordova plugin add PATH_TO_SECURE_STORAGE_PLUGIN/tests
-```
-
-### Running the tests
-
-Just run the app for all platforms. Remember, if you have changes to test you will need to remove the secure storage plugin and add it again for the changes to be seen by the app.
 
 ## <a name="license"></a> LICENSE
 
