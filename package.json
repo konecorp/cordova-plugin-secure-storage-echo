@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-secure-storage-3",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Secure storage plugin for Android",
   "author": "Yiorgis Gozadinos <ggozad@crypho.com>",
   "contributors": [
